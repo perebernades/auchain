@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "auchain-dev",
+      "runtimeExecutable": "/tmp/node-v22.14.0-darwin-arm64/bin/npx",
+      "runtimeArgs": ["vercel", "dev", "--listen", "3000", "--yes"],
+      "port": 3000
+    }
+  ]
+}
