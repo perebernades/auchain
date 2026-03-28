@@ -5,9 +5,10 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#6B7E94] text-xs tracking-wide">
             <span className="text-[#C9A84C] font-semibold">AuChain</span>
-            {' · '}Gold Trust Index
+            {' · '}Trust intelligence for tokenized assets
+            {' · '}v1 methodology
             {' · '}
-            <span className="italic">Not investment advice.</span>
+            <span className="italic">Benchmark, not investment advice.</span>
           </p>
           <p className="text-[#6B7E94] text-xs">
             Market data via{' '}
@@ -19,7 +20,8 @@ export default function Footer() {
             >
               CoinGecko
             </a>
-            {' · '}Static data as of Q1 2026
+            {' · '}Trust inputs as of Q1 2026
+            {' · '}Coverage expanding
           </p>
         </div>
       </div>
