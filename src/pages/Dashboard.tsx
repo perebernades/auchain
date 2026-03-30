@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, Layers, Share2, Download } from 'lucide-react
 import {
   getTokenDetails,
   getPriceHistory,
+  getLiveGoldSpot,
   type TokenDetails,
 } from '../api/coingecko';
 import { TOKEN_METADATA, TRUST_SCORES } from '../data/staticData';
@@ -273,6 +274,13 @@ export default function Dashboard() {
     hour12: false,
   });
 
+  const goldSpot = useQuery({
+    queryKey: ['goldSpot'],
+    queryFn: getLiveGoldSpot,
+    staleTime: 12 * 60 * 60 * 1000, // 12 h — mirrors server-side cache
+    retry: 1,
+  });
+
   const chartsLoading = paxgHistory.isLoading || xautHistory.isLoading;
   const chartsError = paxgHistory.error || xautHistory.error;
 
@@ -322,6 +330,8 @@ export default function Dashboard() {
                 paxgHistory={paxgHistory.data}
                 xautHistory={xautHistory.data}
                 isLoading={chartsLoading}
+                goldSpot={goldSpot.data?.gold}
+                goldSpotSource={goldSpot.data?.source}
               />
               <InterpretationNote className="pt-4 border-t border-[#1E3350]">
                 Persistent premiums or discounts can signal structural frictions, liquidity

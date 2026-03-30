@@ -17,6 +17,8 @@ interface PremiumDiscountChartProps {
   paxgHistory: PricePoint[] | undefined;
   xautHistory: PricePoint[] | undefined;
   isLoading: boolean;
+  goldSpot?: number;
+  goldSpotSource?: 'live' | 'fallback';
 }
 
 function formatDate(ts: number) {
@@ -89,21 +91,30 @@ export default function PremiumDiscountChart({
   paxgHistory,
   xautHistory,
   isLoading,
+  goldSpot,
+  goldSpotSource,
 }: PremiumDiscountChartProps) {
   if (isLoading) return <SkeletonChart height="h-72" />;
 
-  const spot = STATIC_GOLD_SPOT_USD;
+  const spot = goldSpot ?? STATIC_GOLD_SPOT_USD;
+  const isLive = goldSpotSource === 'live';
   const data = buildChartData(paxgHistory ?? [], xautHistory ?? [], spot);
 
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[10px] text-[#6B7E94] uppercase tracking-widest">
-          Spot reference (static): ${spot.toLocaleString()}/oz
+          Spot reference: ${spot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz
         </span>
-        <span className="text-[10px] bg-[#F39C12]/10 text-[#F39C12] border border-[#F39C12]/25 px-1.5 py-0.5 font-semibold tracking-wide">
-          STATIC
-        </span>
+        {isLive ? (
+          <span className="text-[10px] bg-[#2ECC71]/10 text-[#2ECC71] border border-[#2ECC71]/25 px-1.5 py-0.5 font-semibold tracking-wide">
+            LIVE
+          </span>
+        ) : (
+          <span className="text-[10px] bg-[#F39C12]/10 text-[#F39C12] border border-[#F39C12]/25 px-1.5 py-0.5 font-semibold tracking-wide">
+            STATIC
+          </span>
+        )}
       </div>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>

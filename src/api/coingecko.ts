@@ -53,6 +53,12 @@ export interface TokenDetails {
 
 export type PricePoint = [number, number]; // [timestamp_ms, price_usd]
 
+export interface GoldSpotPrice {
+  gold: number;
+  source: 'live' | 'fallback';
+  updatedAt?: string;
+}
+
 // ── 1. getGoldSpotPrice ─────────────────────────────────────
 // Hits /api/prices — edge-cached 5 min on Vercel
 export async function getGoldSpotPrice(): Promise<GoldPrices> {
@@ -75,6 +81,12 @@ export async function getTokenDetails(
   id: 'pax-gold' | 'tether-gold'
 ): Promise<TokenDetails> {
   return cgFetch<TokenDetails>(`${PROXY}/token/${id}`);
+}
+
+// ── Live gold spot price ─────────────────────────────────────
+// Hits /api/gold-spot — edge-cached 12 h on Vercel (≤2 upstream calls/day)
+export async function getLiveGoldSpot(): Promise<GoldSpotPrice> {
+  return cgFetch<GoldSpotPrice>(`${PROXY}/gold-spot`);
 }
 
 // ── 3. getPriceHistory ───────────────────────────────────────
