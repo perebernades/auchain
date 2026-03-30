@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, Layers, Share2, Download } from 'lucide-react
 import {
   getTokenDetails,
   getPriceHistory,
-  getLiveGoldSpot,
+  getPriceHistoryInXau,
   type TokenDetails,
 } from '../api/coingecko';
 import { TOKEN_METADATA, TRUST_SCORES } from '../data/staticData';
@@ -267,6 +267,22 @@ export default function Dashboard() {
     retry: 2,
   });
 
+  // XAU-denominated histories for premium/discount chart
+  // Each price point = token price in troy oz of gold on that date
+  const paxgXauHistory = useQuery({
+    queryKey: ['priceHistoryXau', 'pax-gold'],
+    queryFn: () => getPriceHistoryInXau('pax-gold', 30),
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+
+  const xautXauHistory = useQuery({
+    queryKey: ['priceHistoryXau', 'tether-gold'],
+    queryFn: () => getPriceHistoryInXau('tether-gold', 30),
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+
   const lastUpdated = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
@@ -274,15 +290,10 @@ export default function Dashboard() {
     hour12: false,
   });
 
-  const goldSpot = useQuery({
-    queryKey: ['goldSpot'],
-    queryFn: getLiveGoldSpot,
-    staleTime: 12 * 60 * 60 * 1000, // 12 h — mirrors server-side cache
-    retry: 1,
-  });
-
   const chartsLoading = paxgHistory.isLoading || xautHistory.isLoading;
   const chartsError = paxgHistory.error || xautHistory.error;
+  const premiumLoading = paxgXauHistory.isLoading || xautXauHistory.isLoading;
+  const premiumError = paxgXauHistory.error || xautXauHistory.error;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-10">
@@ -319,19 +330,17 @@ export default function Dashboard() {
         subtitle="Deviation of token price from gold spot reference. Positive = trading at a premium to spot."
       >
         <div className="bg-[#132237] border border-[#1E3350] p-5">
-          {chartsError && !paxgHistory.data && !xautHistory.data ? (
+          {premiumError && !paxgXauHistory.data && !xautXauHistory.data ? (
             <ErrorState
-              error={chartsError as Error}
-              onRetry={() => { paxgHistory.refetch(); xautHistory.refetch(); }}
+              error={premiumError as Error}
+              onRetry={() => { paxgXauHistory.refetch(); xautXauHistory.refetch(); }}
             />
           ) : (
             <>
               <PremiumDiscountChart
-                paxgHistory={paxgHistory.data}
-                xautHistory={xautHistory.data}
-                isLoading={chartsLoading}
-                goldSpot={goldSpot.data?.gold}
-                goldSpotSource={goldSpot.data?.source}
+                paxgXauHistory={paxgXauHistory.data}
+                xautXauHistory={xautXauHistory.data}
+                isLoading={premiumLoading}
               />
               <InterpretationNote className="pt-4 border-t border-[#1E3350]">
                 Persistent premiums or discounts can signal structural frictions, liquidity

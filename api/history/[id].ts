@@ -10,10 +10,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const BASE = 'https://api.coingecko.com/api/v3';
 const VALID_IDS = new Set(['pax-gold', 'tether-gold']);
 
+const VALID_CURRENCIES = new Set(['usd', 'xau']);
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { id, days } = req.query;
+  const { id, days, currency } = req.query;
   const tokenId = Array.isArray(id) ? id[0] : id;
   const numDays = Array.isArray(days) ? days[0] : (days ?? '30');
+  const rawCurrency = Array.isArray(currency) ? currency[0] : (currency ?? 'usd');
+  const safeCurrency = VALID_CURRENCIES.has(rawCurrency) ? rawCurrency : 'usd';
 
   if (!tokenId || !VALID_IDS.has(tokenId)) {
     return res.status(400).json({ error: 'Invalid token id. Use pax-gold or tether-gold.' });
@@ -24,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const upstream = await fetch(
-      `${BASE}/coins/${tokenId}/market_chart?vs_currency=usd&days=${safeDays}&interval=daily`
+      `${BASE}/coins/${tokenId}/market_chart?vs_currency=${safeCurrency}&days=${safeDays}&interval=daily`
     );
 
     if (upstream.status === 429) {

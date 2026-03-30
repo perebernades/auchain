@@ -100,3 +100,17 @@ export async function getPriceHistory(
   );
   return data.prices ?? [];
 }
+
+// ── 4. getPriceHistoryInXau ──────────────────────────────────
+// Fetches token price history denominated in XAU (troy oz of gold).
+// A value of 1.0 = exact gold parity. Premium = (price - 1.0) × 100%.
+// Uses the same edge-cached proxy — historically accurate per date.
+export async function getPriceHistoryInXau(
+  id: 'pax-gold' | 'tether-gold',
+  days: number = 30
+): Promise<PricePoint[]> {
+  const data = await cgFetch<{ prices: PricePoint[] }>(
+    `${PROXY}/history/${id}?days=${days}&currency=xau`
+  );
+  return data.prices ?? [];
+}

@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "auchain-dev",
-      "runtimeExecutable": "/tmp/node-v22.14.0-darwin-arm64/bin/npx",
-      "runtimeArgs": ["vercel", "dev", "--listen", "3000", "--yes"],
-      "port": 3000
+      "runtimeExecutable": "/tmp/node-v22.14.0-darwin-arm64/bin/node",
+      "runtimeArgs": ["node_modules/.bin/vite", "--port", "5173"],
+      "port": 5173
     }
   ]
 }

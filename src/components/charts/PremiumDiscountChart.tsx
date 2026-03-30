@@ -10,23 +10,20 @@ import {
   Legend,
 } from 'recharts';
 import type { PricePoint } from '../../api/coingecko';
-import { STATIC_GOLD_SPOT_USD } from '../../data/staticData';
 import { SkeletonChart } from '../ui/SkeletonCard';
 
+// Each PricePoint here is [timestamp_ms, price_in_xau].
+// A value of 1.0 = token trades at exact gold parity.
+// Premium % = (xau_price - 1.0) × 100
+
 interface PremiumDiscountChartProps {
-  paxgHistory: PricePoint[] | undefined;
-  xautHistory: PricePoint[] | undefined;
+  paxgXauHistory: PricePoint[] | undefined;
+  xautXauHistory: PricePoint[] | undefined;
   isLoading: boolean;
-  goldSpot?: number;
-  goldSpotSource?: 'live' | 'fallback';
 }
 
 function formatDate(ts: number) {
   return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function calcPremiumPct(price: number, spot: number) {
-  return parseFloat((((price - spot) / spot) * 100).toFixed(2));
 }
 
 interface ChartPoint {
@@ -38,23 +35,21 @@ interface ChartPoint {
 
 function buildChartData(
   paxgHistory: PricePoint[],
-  xautHistory: PricePoint[],
-  spot: number
+  xautHistory: PricePoint[]
 ): ChartPoint[] {
-  // Build a map by date string so we can merge both series
   const map = new Map<string, ChartPoint>();
 
-  for (const [ts, price] of paxgHistory) {
+  for (const [ts, xauPrice] of paxgHistory) {
     const date = formatDate(ts);
     const entry = map.get(date) ?? { date, ts };
-    entry.paxg = calcPremiumPct(price, spot);
+    entry.paxg = parseFloat(((xauPrice - 1.0) * 100).toFixed(2));
     map.set(date, entry);
   }
 
-  for (const [ts, price] of xautHistory) {
+  for (const [ts, xauPrice] of xautHistory) {
     const date = formatDate(ts);
     const entry = map.get(date) ?? { date, ts };
-    entry.xaut = calcPremiumPct(price, spot);
+    entry.xaut = parseFloat(((xauPrice - 1.0) * 100).toFixed(2));
     map.set(date, entry);
   }
 
@@ -88,33 +83,20 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
 }
 
 export default function PremiumDiscountChart({
-  paxgHistory,
-  xautHistory,
+  paxgXauHistory,
+  xautXauHistory,
   isLoading,
-  goldSpot,
-  goldSpotSource,
 }: PremiumDiscountChartProps) {
   if (isLoading) return <SkeletonChart height="h-72" />;
 
-  const spot = goldSpot ?? STATIC_GOLD_SPOT_USD;
-  const isLive = goldSpotSource === 'live';
-  const data = buildChartData(paxgHistory ?? [], xautHistory ?? [], spot);
+  const data = buildChartData(paxgXauHistory ?? [], xautXauHistory ?? []);
 
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[10px] text-[#6B7E94] uppercase tracking-widest">
-          Spot reference: ${spot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz
+          Premium / discount vs gold parity (XAU) — historically accurate per date
         </span>
-        {isLive ? (
-          <span className="text-[10px] bg-[#2ECC71]/10 text-[#2ECC71] border border-[#2ECC71]/25 px-1.5 py-0.5 font-semibold tracking-wide">
-            LIVE
-          </span>
-        ) : (
-          <span className="text-[10px] bg-[#F39C12]/10 text-[#F39C12] border border-[#F39C12]/25 px-1.5 py-0.5 font-semibold tracking-wide">
-            STATIC
-          </span>
-        )}
       </div>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
@@ -147,7 +129,7 @@ export default function PremiumDiscountChart({
             stroke="#E8EDF2"
             strokeDasharray="5 4"
             strokeOpacity={0.3}
-            label={{ value: 'Spot parity', position: 'insideTopRight', fill: '#6B7E94', fontSize: 10 }}
+            label={{ value: 'Gold parity', position: 'insideTopRight', fill: '#6B7E94', fontSize: 10 }}
           />
           <Line
             type="monotone"
