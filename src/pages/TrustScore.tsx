@@ -193,11 +193,11 @@ export default function TrustScore() {
         and custody strength.
       </InsightBanner>
 
-      {/* Section A — Score Summary */}
+      {/* Section A. Score Summary */}
       <section>
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            A — Score Summary
+            A. Score Summary
           </h2>
           <span className="text-[10px] bg-[#F39C12]/10 text-[#F39C12] border border-[#F39C12]/25 px-2 py-0.5 font-semibold tracking-wider uppercase">
             Updated Monthly
@@ -226,11 +226,11 @@ export default function TrustScore() {
         </div>
       </section>
 
-      {/* Section B — Trust Dimension Radar */}
+      {/* Section B. Trust Dimension Radar */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            B — Trust Dimension Radar
+            B. Trust Dimension Radar
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
             7-axis comparison across all trust dimensions. Larger coverage area = stronger trust profile.
@@ -240,17 +240,17 @@ export default function TrustScore() {
           <TrustRadarChart />
           <InterpretationNote className="pt-4 border-t border-[#1E3350]">
             Larger radar coverage does not imply lower price risk. It indicates a stronger
-            trust profile across AuChain's benchmark dimensions — transparency, custody,
+            trust profile across AuChain's benchmark dimensions: transparency, custody,
             audit quality, legal structure, and market integrity.
           </InterpretationNote>
         </div>
       </section>
 
-      {/* Section C — Dimension Breakdown */}
+      {/* Section C. Dimension Breakdown */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            C — Dimension Breakdown
+            C. Dimension Breakdown
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
             Score key:{' '}
@@ -267,16 +267,16 @@ export default function TrustScore() {
         </div>
         <InterpretationNote>
           Dimension scores are derived from publicly verifiable inputs only. Where
-          disclosures are absent or incomplete, scores reflect the informational gap —
+          disclosures are absent or incomplete, scores reflect the informational gap,
           not an assumption of adequate practice.
         </InterpretationNote>
       </section>
 
-      {/* Section D — Methodology */}
+      {/* Section D. Methodology */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            D — Methodology
+            D. Methodology
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
             Designed for transparent, repeatable benchmarking across tokenized gold products
@@ -291,9 +291,9 @@ export default function TrustScore() {
               <div className="flex-1">
                 <p className="text-[#E8EDF2] text-sm leading-relaxed">
                   The AuChain Trust Score is a structured benchmark across 7 trust dimensions.
-                  Each dimension is independently assessed using publicly verifiable inputs —
-                  including reserve attestations, issuer disclosures, legal filings, on-chain
-                  data, and observable market structure. Version 1 applies equal weighting to
+                  Each dimension is independently assessed using publicly verifiable inputs:
+                  reserve attestations, issuer disclosures, legal filings, on-chain data,
+                  and observable market structure. Version 1 applies equal weighting to
                   maximize transparency and comparability across products.
                 </p>
 
@@ -330,7 +330,7 @@ export default function TrustScore() {
             ))}
           </div>
 
-          {/* Disclaimer — firm, not apologetic */}
+          {/* Disclaimer */}
           <p className="text-[#6B7E94] text-[11px] leading-relaxed px-1">
             AuChain Trust Scores are structured benchmarks, not investment advice.
             They assess publicly observable trust attributes and do not forecast price
@@ -344,7 +344,7 @@ export default function TrustScore() {
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            E — What's Next
+            E. What's Next
           </h2>
         </div>
         <RoadmapCard />

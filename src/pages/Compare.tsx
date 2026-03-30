@@ -4,7 +4,7 @@ import InsightBanner from '../components/ui/InsightBanner';
 import InterpretationNote from '../components/ui/InterpretationNote';
 import ActionRow from '../components/ui/ActionRow';
 
-// ── Status icon ───────────────────────────────────────────────
+// Status icon
 function StatusIcon({ status }: { status: CellStatus }) {
   switch (status) {
     case 'green': return <CheckCircle2 size={13} className="text-[#2ECC71] shrink-0" />;
@@ -23,7 +23,7 @@ function cellTextColor(status: CellStatus): string {
   }
 }
 
-// ── Verdict Card ──────────────────────────────────────────────
+// Verdict Card
 interface VerdictCardProps {
   title: string;
   items?: string[];
@@ -64,7 +64,7 @@ function VerdictCard({ title, items, body, variant = 'muted' }: VerdictCardProps
   );
 }
 
-// ── Comparison Table ──────────────────────────────────────────
+// Comparison Table
 function ComparisonTable() {
   const columns = ['PAXG', 'XAUT', 'GLD (SPDR)', 'IAU (iShares)'] as const;
   const colKeys = ['paxg', 'xaut', 'gld', 'iau'] as const;
@@ -135,7 +135,7 @@ function ComparisonTable() {
   );
 }
 
-// ── Compare Page ──────────────────────────────────────────────
+// Compare Page
 export default function Compare() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-10">
@@ -160,16 +160,16 @@ export default function Compare() {
       {/* Key Insight */}
       <InsightBanner>
         Tokenized gold improves transparency and enables 24/7 transferability, but ETFs
-        still dominate on liquidity, institutional infrastructure, and accessibility. The
-        comparison is not about replacement — it shows where trust infrastructure is
+        still dominate on liquidity, institutional infrastructure, and accessibility. This
+        comparison is not about replacement; it shows where trust infrastructure is
         improving fastest.
       </InsightBanner>
 
-      {/* Section A — Full Comparison Matrix */}
+      {/* Section A. Full Comparison Matrix */}
       <section>
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            A — Full Comparison Matrix
+            A. Full Comparison Matrix
           </h2>
           <span className="text-[10px] bg-[#F39C12]/10 text-[#F39C12] border border-[#F39C12]/25 px-2 py-0.5 font-semibold tracking-wider uppercase">
             As of Q1 2026
@@ -197,20 +197,20 @@ export default function Compare() {
           <ComparisonTable />
         </div>
         <InterpretationNote>
-          The AuChain Trust Score row is the only metric in this table that is not directly
+          The AuChain Trust Score row is the only metric in this table not directly
           available elsewhere. It synthesizes 7 trust dimensions into a single comparable
-          benchmark — a signal ETFs are not yet evaluated against.
+          benchmark, a signal ETFs are not yet evaluated against.
         </InterpretationNote>
       </section>
 
-      {/* Section B — Verdict */}
+      {/* Section B. Verdict */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            B — Verdict
+            B. Verdict
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
-            Where each structure wins — and why the gap still matters.
+            Where each structure wins and why the gap still matters.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -218,7 +218,7 @@ export default function Compare() {
             title="Where Tokenized Gold Leads"
             variant="green"
             items={[
-              'On-chain supply verifiable in real time — no disclosure lag',
+              'On-chain supply verifiable in real time, no disclosure lag',
               '24/7 global trading across any timezone or jurisdiction',
               'Zero annual management fee (gas fees apply on-chain)',
               'Faster attestation cycle: PAXG monthly vs ETF annual',
@@ -228,16 +228,16 @@ export default function Compare() {
             title="Where ETFs Maintain the Advantage"
             variant="amber"
             items={[
-              'Liquidity: 200–500× higher daily volume than tokenized peers',
+              'Liquidity: 200 to 500 times higher daily volume than tokenized peers',
               'Institutional infrastructure: clearing, prime brokerage, lending',
               'Redemption: no minimum for retail investors (via open market)',
-              'Regulatory certainty: SEC framework vs Cayman or NYDFS',
+              'Regulatory certainty: SEC framework vs alternative domiciles',
             ]}
           />
           <VerdictCard
             title="The Bottom Line"
             variant="gold"
-            body="Tokenized gold improves transparency at the token layer. ETFs win on liquidity and adoption infrastructure. The technology gap is closing; the trust infrastructure gap is what AuChain measures — and what will determine long-term institutional adoption."
+            body="Tokenized gold improves transparency at the token layer. ETFs win on liquidity and adoption infrastructure. The technology gap is closing; the trust infrastructure gap is what AuChain measures and what will determine long-term institutional adoption."
           />
           <VerdictCard
             title="Why This Comparison Matters"
@@ -247,16 +247,16 @@ export default function Compare() {
         </div>
         <InterpretationNote>
           This comparison is not a verdict on whether tokenized gold should replace ETFs.
-          It maps where trust infrastructure is strongest today — and where it has the
+          It maps where trust infrastructure is strongest today and where it has the
           most room to develop.
         </InterpretationNote>
       </section>
 
-      {/* Section C — Quick Reference */}
+      {/* Section C. Market Context */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            C — Market Context
+            C. Market Context
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
             Scale of the tokenized gold market relative to traditional paper gold.
@@ -299,7 +299,7 @@ export default function Compare() {
               icon: <BookOpen size={10} />,
               onClick: () => {
                 navigator.clipboard?.writeText(
-                  'AuChain (2026). Tokenized Gold vs ETFs — Methodology-Driven Benchmark. auchain.vercel.app/compare'
+                  'AuChain (2026). Tokenized Gold vs ETFs: Methodology-Driven Benchmark. auchain.vercel.app/compare'
                 );
               },
               activatedLabel: 'Citation Copied',

@@ -95,7 +95,7 @@ export default function PremiumDiscountChart({
     <div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[10px] text-[#6B7E94] uppercase tracking-widest">
-          Premium / discount vs gold parity (XAU) — historically accurate per date
+          Premium / discount vs gold parity (XAU), historically accurate per date
         </span>
       </div>
       <ResponsiveContainer width="100%" height={280}>

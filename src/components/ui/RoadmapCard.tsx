@@ -8,7 +8,7 @@ import { ArrowRight } from 'lucide-react';
 const ROADMAP_ITEMS = [
   'Trust score history and trend tracking',
   'Issuer event alerts and monitoring',
-  'Coverage expansion — additional tokenized gold products',
+  'Coverage expansion: additional tokenized gold products',
   'Methodology whitepaper (PDF download)',
   'Downloadable trust snapshots and audit reports',
 ];

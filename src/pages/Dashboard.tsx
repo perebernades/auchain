@@ -128,7 +128,7 @@ function TokenCard({ id, tokenKey }: TokenCardProps) {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#6B7E94] text-xs">Custodian</span>
-            <span className={`text-xs font-medium ${meta.custodian === 'Undisclosed' ? 'text-[#F39C12]' : 'text-[#E8EDF2]'}`}>
+            <span className="text-[#E8EDF2] text-xs font-medium">
               {meta.custodian}
             </span>
           </div>
@@ -137,6 +137,10 @@ function TokenCard({ id, tokenKey }: TokenCardProps) {
             <ScoreBadge variant={meta.regulatoryBadge} size="sm">
               {meta.regulatoryStatus}
             </ScoreBadge>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[#6B7E94] text-xs">Min. Purchase</span>
+            <span className="text-[#E8EDF2] text-xs font-medium">{meta.minPurchaseLabel} (+fee)</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#6B7E94] text-xs">Redemption Min.</span>
@@ -205,7 +209,7 @@ function HeroBlock({ lastUpdated }: { lastUpdated: string }) {
 
           {/* Headline */}
           <h1 className="text-[28px] font-bold text-[#E8EDF2] tracking-tight leading-tight mb-2">
-            AuChain — The Trust Index<br className="hidden sm:block" /> for Tokenized Gold
+            AuChain: The Trust Index<br className="hidden sm:block" /> for Tokenized Gold
           </h1>
 
           {/* Subheadline */}
@@ -304,13 +308,13 @@ export default function Dashboard() {
       {/* Key Insight */}
       <InsightBanner>
         PAXG and XAUT track gold similarly in price, but diverge materially in trust
-        profile — due to differences in audit regularity, custody disclosure, and
-        regulatory clarity. Price convergence masks structural divergence.
+        profile. Differences in audit regularity, custody disclosure, and regulatory
+        clarity mean price convergence masks structural divergence.
       </InsightBanner>
 
       {/* Section A — Token Overview */}
       <Section
-        title="A — Token Overview"
+        title="A. Token Overview"
         subtitle="Live market data via CoinGecko. Refreshed every 5 minutes via edge cache."
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -326,7 +330,7 @@ export default function Dashboard() {
 
       {/* Section B — Spot Premium / Discount */}
       <Section
-        title="B — Spot Premium / Discount (30 Days)"
+        title="B. Spot Premium / Discount (30 Days)"
         subtitle="Deviation of token price from gold spot reference. Positive = trading at a premium to spot."
       >
         <div className="bg-[#132237] border border-[#1E3350] p-5">
@@ -354,7 +358,7 @@ export default function Dashboard() {
 
       {/* Section C — 30-Day Price Performance */}
       <Section
-        title="C — 30-Day Price Performance (USD)"
+        title="C. 30-Day Price Performance (USD)"
         subtitle="PAXG vs XAUT absolute price in USD over the past 30 days."
       >
         <div className="bg-[#132237] border border-[#1E3350] p-5">
@@ -373,7 +377,7 @@ export default function Dashboard() {
                 isLoading={chartsLoading}
               />
               <InterpretationNote className="pt-4 border-t border-[#1E3350]">
-                Price convergence between PAXG and XAUT is expected — both track spot gold.
+                Price convergence between PAXG and XAUT is expected; both track spot gold.
                 Divergences reflect market structure or liquidity differences, not changes
                 in the underlying asset.
               </InterpretationNote>
@@ -384,29 +388,29 @@ export default function Dashboard() {
 
       {/* Section D — Key Risk Signals */}
       <Section
-        title="D — Key Risk Signals"
+        title="D. Key Risk Signals"
         subtitle="Trust inputs based on public filings, reserve attestations, and observable market data as of Q1 2026."
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <RiskColumn
             title="Reserve Attestation"
             items={[
-              { label: 'PAXG', badge: 'green', text: 'Monthly (Withum)' },
-              { label: 'XAUT', badge: 'amber', text: 'Quarterly (MHA Cayman)' },
+              { label: 'PAXG', badge: 'green', text: 'Monthly (KPMG)' },
+              { label: 'XAUT', badge: 'amber', text: 'Quarterly (BDO)' },
             ]}
           />
           <RiskColumn
             title="Redemption Minimum"
             items={[
               { label: 'PAXG', badge: 'red', text: '430 oz (~$1.3M)' },
-              { label: 'XAUT', badge: 'amber', text: '50 oz (~$155K)' },
+              { label: 'XAUT', badge: 'red', text: '430 oz (~$1.3M)' },
             ]}
           />
           <RiskColumn
             title="Regulatory Status"
             items={[
               { label: 'PAXG', badge: 'green', text: 'NYDFS Regulated' },
-              { label: 'XAUT', badge: 'amber', text: 'Cayman Islands' },
+              { label: 'XAUT', badge: 'amber', text: 'El Salvador' },
             ]}
           />
         </div>

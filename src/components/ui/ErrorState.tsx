@@ -13,7 +13,7 @@ export default function ErrorState({ error, onRetry, compact = false }: ErrorSta
     return (
       <div className="flex items-center gap-2 px-3 py-2 bg-[#E74C3C]/10 border border-[#E74C3C]/25 text-[#E74C3C] text-xs">
         <AlertTriangle size={13} />
-        <span>{isRateLimit ? 'Rate limited — showing last known data' : 'Failed to load data'}</span>
+        <span>{isRateLimit ? 'Rate limited, showing last known data' : 'Failed to load data'}</span>
         {onRetry && (
           <button
             onClick={onRetry}
@@ -68,7 +68,7 @@ export function RateLimitBanner() {
     <div className="w-full bg-[#F39C12]/10 border-b border-[#F39C12]/25 px-4 py-2 flex items-center justify-center gap-2">
       <Wifi size={13} className="text-[#F39C12] shrink-0" />
       <span className="text-[#F39C12] text-xs font-medium">
-        Rate limited — showing last known data. Live prices may be delayed.
+        Rate limited. Showing last known data. Live prices may be delayed.
       </span>
     </div>
   );

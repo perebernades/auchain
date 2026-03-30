@@ -1,20 +1,20 @@
 // ============================================================
-// AuChain — Static Data
-// All values below are HARDCODED / STATIC — not from any API.
+// AuChain - Static Data
+// All values below are HARDCODED / STATIC - not from any API.
 // These reflect real-world data as of Q1 2026.
 // Marked with [STATIC] in comments for clarity.
 // ============================================================
 
-// ── Trust Score Dimensions ───────────────────────────────────
-// [STATIC] Proprietary AuChain Trust Score v1 — weighted equally
+// Trust Score Dimensions
+// [STATIC] Proprietary AuChain Trust Score v1 - weighted equally
 export const TRUST_DIMENSIONS = [
   {
     key: 'reserveQuality',
     label: 'Reserve Quality',
-    paxg: 85,
-    xaut: 55,
+    paxg: 90,
+    xaut: 60,
     whatWeMeasure: 'Reserve attestation frequency, auditor tier, and gold backing ratio.',
-    keyDifference: 'PAXG: monthly Withum attestation. XAUT: quarterly MHA Cayman.',
+    keyDifference: 'PAXG: monthly KPMG attestation. XAUT: quarterly BDO.',
   },
   {
     key: 'legalClarity',
@@ -22,31 +22,31 @@ export const TRUST_DIMENSIONS = [
     paxg: 80,
     xaut: 50,
     whatWeMeasure: 'Domicile regulatory clarity, issuer licensing, and legal recourse.',
-    keyDifference: 'PAXG: NYDFS regulated entity. XAUT: Cayman domicile.',
+    keyDifference: 'PAXG: NYDFS regulated entity. XAUT: El Salvador domicile.',
   },
   {
     key: 'custodyStrength',
     label: 'Custody Strength',
-    paxg: 75,
-    xaut: 40,
+    paxg: 80,
+    xaut: 60,
     whatWeMeasure: 'Custodian identity disclosure, vault locations, and insurance coverage.',
-    keyDifference: 'PAXG: Brinks disclosed. XAUT: custodian not publicly named.',
+    keyDifference: 'PAXG: Paxos Trust Co., LBMA-approved vaults. XAUT: TG Commodities S.A., Swiss vaults.',
   },
   {
     key: 'auditRegularity',
     label: 'Audit Regularity',
     paxg: 90,
-    xaut: 60,
+    xaut: 65,
     whatWeMeasure: 'Annual audit count, auditor reputation, and report public availability.',
-    keyDifference: 'PAXG: 12x/year. XAUT: 4x/year. Auditor tier differs.',
+    keyDifference: 'PAXG: 12x/year (KPMG, Big Four). XAUT: 4x/year (BDO, Top 5 globally).',
   },
   {
     key: 'redemptionAccess',
     label: 'Redemption Access',
-    paxg: 50,
-    xaut: 65,
-    whatWeMeasure: 'Minimum redemption amount and accessibility for non-institutional holders.',
-    keyDifference: 'XAUT wins: 50oz min vs PAXG 430oz. Both still institutional.',
+    paxg: 55,
+    xaut: 45,
+    whatWeMeasure: 'Minimum purchase and redemption thresholds, accessibility for non-institutional holders.',
+    keyDifference: 'Both: 430 oz redemption min. PAXG min purchase: 0.03 oz. XAUT min purchase: 50 oz.',
   },
   {
     key: 'smartContract',
@@ -54,7 +54,7 @@ export const TRUST_DIMENSIONS = [
     paxg: 70,
     xaut: 60,
     whatWeMeasure: 'Contract audit history, upgradability risks, and on-chain transparency.',
-    keyDifference: 'Both Ethereum ERC-20. PAXG contract older, more audited.',
+    keyDifference: 'PAXG: ETH ERC-20 only, older and more audited contract. XAUT: multi-chain (ETH, BNB, TRON) plus LayerZero XAUt0.',
   },
   {
     key: 'liquidity',
@@ -62,36 +62,37 @@ export const TRUST_DIMENSIONS = [
     paxg: 65,
     xaut: 35,
     whatWeMeasure: 'Average daily trading volume, DEX/CEX depth, and bid-ask spreads.',
-    keyDifference: 'PAXG ~$5M/day. XAUT ~$2M/day. Both thin vs GLD ($1B+/day).',
+    keyDifference: 'PAXG approx $5M/day. XAUT approx $2M/day. Both thin vs GLD ($1B+/day).',
   },
 ] as const;
 
-// ── Composite Trust Scores ────────────────────────────────────
+// Composite Trust Scores
 // [STATIC] Average of 7 equally-weighted dimensions
 export const TRUST_SCORES = {
-  paxg: 75, // Average: (85+80+75+90+50+70+65)/7 ≈ 73.6 → rounded to 75
-  xaut: 55, // Average: (55+50+40+60+65+60+35)/7 ≈ 52.1 → rounded to 55
+  paxg: 76, // (90+80+80+90+55+70+65)/7 = 75.7 -> 76
+  xaut: 54, // (60+50+60+65+45+60+35)/7 = 53.6 -> 54
 } as const;
 
 export const TRUST_VERDICTS = {
-  paxg: 'Strong reserve & audit quality. Redemption threshold is high.',
-  xaut: 'Custodian opacity and irregular audits are key risk factors.',
+  paxg: 'Strong reserve and audit quality with KPMG attestation. High redemption threshold.',
+  xaut: 'Custody now disclosed and BDO audits. Redemption minimum raised to institutional level.',
 } as const;
 
-// ── Token Static Metadata ────────────────────────────────────
-// [STATIC] Audit, custodian, and regulatory data — not on CoinGecko
+// Token Static Metadata
+// [STATIC] Audit, custodian, and regulatory data - not on CoinGecko
 export const TOKEN_METADATA = {
   paxg: {
     name: 'PAX Gold',
     ticker: 'PAXG',
-    chain: 'Ethereum',
-    custodian: 'Brinks (London/NYC)',
-    auditor: 'Withum',
+    chain: 'ETH ERC-20',
+    custodian: 'Paxos Trust Company (LBMA)',
+    auditor: 'KPMG',
     auditFrequency: 'Monthly',
     lastAttestation: 'Feb 2026',
-    lastAttestationStatus: 'ok' as const, // 'ok' | 'warning'
+    lastAttestationStatus: 'ok' as const,
     redemptionMinOz: 430,
     redemptionMinUsd: '~$1.3M',
+    minPurchaseLabel: '0.03 oz',
     regulatoryStatus: 'NYDFS Regulated',
     regulatoryBadge: 'green' as const,
     attestationBadge: 'green' as const,
@@ -100,28 +101,29 @@ export const TOKEN_METADATA = {
   xaut: {
     name: 'Tether Gold',
     ticker: 'XAUT',
-    chain: 'Ethereum',
-    custodian: 'Undisclosed',
-    auditor: 'MHA Cayman',
+    chain: 'Multi-chain',
+    custodian: 'TG Commodities S.A. de C.V.',
+    auditor: 'BDO',
     auditFrequency: 'Quarterly',
     lastAttestation: 'Nov 2025',
     lastAttestationStatus: 'warning' as const,
-    redemptionMinOz: 50,
-    redemptionMinUsd: '~$155K',
-    regulatoryStatus: 'Cayman Islands',
+    redemptionMinOz: 430,
+    redemptionMinUsd: '~$1.3M',
+    minPurchaseLabel: '50 oz',
+    regulatoryStatus: 'El Salvador',
     regulatoryBadge: 'amber' as const,
     attestationBadge: 'amber' as const,
-    redemptionBadge: 'amber' as const,
+    redemptionBadge: 'red' as const,
   },
 } as const;
 
-// ── Spot Price Reference ─────────────────────────────────────
+// Spot Price Reference
 // [STATIC] Used as fallback when live XAU price cannot be fetched.
 // Source: approximate gold spot price as of Q1 2026.
 export const STATIC_GOLD_SPOT_USD = 3100; // USD per troy oz
 
-// ── ETF Comparison Data ──────────────────────────────────────
-// [STATIC] Traditional gold ETF data — publicly available
+// ETF Comparison Data
+// [STATIC] Traditional gold ETF data - publicly available
 export const ETF_DATA = {
   gld: {
     name: 'GLD',
@@ -155,7 +157,7 @@ export const ETF_DATA = {
   },
 } as const;
 
-// ── Comparison Table Rows ─────────────────────────────────────
+// Comparison Table Rows
 // [STATIC] Qualitative and quantitative comparison matrix
 export type CellStatus = 'green' | 'amber' | 'red' | 'neutral';
 
@@ -200,31 +202,39 @@ export const COMPARE_ROWS: CompareRow[] = [
   },
   {
     dimension: 'Custody Provider',
-    paxg: { value: 'Brinks', status: 'green', best: true },
-    xaut: { value: 'Undisclosed', status: 'amber' },
+    paxg: { value: 'Paxos Trust Co.', status: 'green', best: true },
+    xaut: { value: 'TG Commodities S.A.', status: 'green' },
     gld: { value: 'HSBC', status: 'green', best: true },
     iau: { value: 'JPMorgan', status: 'green', best: true },
   },
   {
     dimension: 'Audit Frequency',
-    paxg: { value: 'Monthly', status: 'green', best: true },
-    xaut: { value: 'Quarterly', status: 'amber' },
+    paxg: { value: 'Monthly (KPMG)', status: 'green', best: true },
+    xaut: { value: 'Quarterly (BDO)', status: 'amber' },
     gld: { value: 'Annual', status: 'amber' },
     iau: { value: 'Annual', status: 'amber' },
   },
   {
     dimension: 'Regulatory Cover',
     paxg: { value: 'NYDFS', status: 'green', best: true },
-    xaut: { value: 'Cayman', status: 'amber' },
+    xaut: { value: 'El Salvador', status: 'amber' },
     gld: { value: 'SEC', status: 'green', best: true },
     iau: { value: 'SEC', status: 'green', best: true },
   },
   {
-    dimension: 'Redemption Access',
-    paxg: { value: '430 oz min', status: 'red' },
-    xaut: { value: '50 oz min', status: 'amber', best: true },
+    dimension: 'Redemption Min.',
+    paxg: { value: '430 oz', status: 'red' },
+    xaut: { value: '430 oz', status: 'red' },
     gld: { value: 'APs only', status: 'red' },
     iau: { value: 'APs only', status: 'red' },
+    note: 'Physical redemption requires institutional-scale holdings across all products',
+  },
+  {
+    dimension: 'Min. Purchase',
+    paxg: { value: '0.03 oz', status: 'green', best: true },
+    xaut: { value: '50 oz', status: 'red' },
+    gld: { value: '1 share', status: 'green', best: true },
+    iau: { value: '1 share', status: 'green', best: true },
   },
   {
     dimension: 'On-chain Verifiable',
@@ -234,16 +244,9 @@ export const COMPARE_ROWS: CompareRow[] = [
     iau: { value: 'No', status: 'red' },
   },
   {
-    dimension: 'Min. Investment',
-    paxg: { value: '~$3,100', status: 'neutral' },
-    xaut: { value: '~$3,100', status: 'neutral' },
-    gld: { value: '1 share', status: 'green', best: true },
-    iau: { value: '1 share', status: 'green', best: true },
-  },
-  {
     dimension: 'Trust Score',
-    paxg: { value: '75 / 100', status: 'green', best: true },
-    xaut: { value: '55 / 100', status: 'amber' },
+    paxg: { value: '76 / 100', status: 'green', best: true },
+    xaut: { value: '54 / 100', status: 'amber' },
     gld: { value: 'N/A', status: 'neutral' },
     iau: { value: 'N/A', status: 'neutral' },
   },
