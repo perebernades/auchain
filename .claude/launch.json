@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "auchain-dev",
-      "runtimeExecutable": "/tmp/node-v22.14.0-darwin-arm64/bin/node",
-      "runtimeArgs": ["node_modules/.bin/vite", "--port", "5173"],
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/tmp/auchain-start.sh"],
       "port": 5173
     }
   ]

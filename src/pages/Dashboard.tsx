@@ -368,6 +368,8 @@ export default function Dashboard() {
               <PriceHistoryChart
                 paxgHistory={paxgHistory.data}
                 xautHistory={xautHistory.data}
+                paxgXauHistory={paxgXauHistory.data}
+                xautXauHistory={xautXauHistory.data}
                 isLoading={chartsLoading}
               />
               <InterpretationNote className="pt-4 border-t border-[#1E3350]">

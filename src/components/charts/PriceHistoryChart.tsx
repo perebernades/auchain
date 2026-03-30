@@ -2,6 +2,7 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,6 +15,8 @@ import { SkeletonChart } from '../ui/SkeletonCard';
 interface PriceHistoryChartProps {
   paxgHistory: PricePoint[] | undefined;
   xautHistory: PricePoint[] | undefined;
+  paxgXauHistory?: PricePoint[] | undefined;
+  xautXauHistory?: PricePoint[] | undefined;
   isLoading: boolean;
 }
 
@@ -33,11 +36,19 @@ interface ChartPoint {
   ts: number;
   paxg?: number;
   xaut?: number;
+  gold?: number;
+  // Intermediate accumulators for gold derivation
+  _paxgUsd?: number;
+  _paxgXau?: number;
+  _xautUsd?: number;
+  _xautXau?: number;
 }
 
 function buildChartData(
   paxgHistory: PricePoint[],
-  xautHistory: PricePoint[]
+  xautHistory: PricePoint[],
+  paxgXauHistory: PricePoint[],
+  xautXauHistory: PricePoint[]
 ): ChartPoint[] {
   const map = new Map<string, ChartPoint>();
 
@@ -45,6 +56,7 @@ function buildChartData(
     const date = formatDate(ts);
     const entry = map.get(date) ?? { date, ts };
     entry.paxg = price;
+    entry._paxgUsd = price;
     map.set(date, entry);
   }
 
@@ -52,7 +64,44 @@ function buildChartData(
     const date = formatDate(ts);
     const entry = map.get(date) ?? { date, ts };
     entry.xaut = price;
+    entry._xautUsd = price;
     map.set(date, entry);
+  }
+
+  for (const [ts, xauPrice] of paxgXauHistory) {
+    const date = formatDate(ts);
+    const entry = map.get(date) ?? { date, ts };
+    entry._paxgXau = xauPrice;
+    map.set(date, entry);
+  }
+
+  for (const [ts, xauPrice] of xautXauHistory) {
+    const date = formatDate(ts);
+    const entry = map.get(date) ?? { date, ts };
+    entry._xautXau = xauPrice;
+    map.set(date, entry);
+  }
+
+  // Derive gold spot price per date: token_usd / token_xau = 1 oz gold in USD
+  // Average PAXG and XAUT estimates where both are available; fall back to one if only one exists.
+  for (const entry of map.values()) {
+    const estimates: number[] = [];
+    if (entry._paxgUsd && entry._paxgXau && entry._paxgXau > 0) {
+      estimates.push(entry._paxgUsd / entry._paxgXau);
+    }
+    if (entry._xautUsd && entry._xautXau && entry._xautXau > 0) {
+      estimates.push(entry._xautUsd / entry._xautXau);
+    }
+    if (estimates.length > 0) {
+      entry.gold = parseFloat(
+        (estimates.reduce((a, b) => a + b, 0) / estimates.length).toFixed(2)
+      );
+    }
+    // Clean up accumulators
+    delete entry._paxgUsd;
+    delete entry._paxgXau;
+    delete entry._xautUsd;
+    delete entry._xautXau;
   }
 
   return Array.from(map.values()).sort((a, b) => a.ts - b.ts);
@@ -85,14 +134,25 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
 export default function PriceHistoryChart({
   paxgHistory,
   xautHistory,
+  paxgXauHistory,
+  xautXauHistory,
   isLoading,
 }: PriceHistoryChartProps) {
   if (isLoading) return <SkeletonChart height="h-72" />;
 
-  const data = buildChartData(paxgHistory ?? [], xautHistory ?? []);
+  const data = buildChartData(
+    paxgHistory ?? [],
+    xautHistory ?? [],
+    paxgXauHistory ?? [],
+    xautXauHistory ?? []
+  );
 
-  // Compute Y domain with 1% padding
-  const allPrices = data.flatMap((d) => [d.paxg, d.xaut].filter(Boolean) as number[]);
+  const showGold = (paxgXauHistory?.length ?? 0) > 0 || (xautXauHistory?.length ?? 0) > 0;
+
+  // Compute Y domain across all series with 5% padding
+  const allPrices = data.flatMap((d) =>
+    [d.paxg, d.xaut, showGold ? d.gold : undefined].filter((v): v is number => v != null)
+  );
   const minPrice = Math.min(...allPrices);
   const maxPrice = Math.max(...allPrices);
   const padding = (maxPrice - minPrice) * 0.05;
@@ -161,6 +221,19 @@ export default function PriceHistoryChart({
           activeDot={{ r: 4, fill: '#E8C97A', stroke: '#0D1B2A', strokeWidth: 2 }}
           connectNulls
         />
+        {showGold && (
+          <Line
+            type="monotone"
+            dataKey="gold"
+            name="Gold Spot"
+            stroke="#94A3B8"
+            strokeWidth={1.5}
+            strokeDasharray="6 3"
+            dot={false}
+            activeDot={{ r: 4, fill: '#94A3B8', stroke: '#0D1B2A', strokeWidth: 2 }}
+            connectNulls
+          />
+        )}
       </AreaChart>
     </ResponsiveContainer>
   );
