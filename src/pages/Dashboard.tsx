@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, TrendingDown, Layers, Share2, Download } from 'lucide-react';
+import { TrendingUp, TrendingDown, Layers, Share2, Download, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import {
   getTokenDetails,
   getPriceHistory,
@@ -7,6 +7,7 @@ import {
   type TokenDetails,
 } from '../api/coingecko';
 import { TOKEN_METADATA, TRUST_SCORES } from '../data/staticData';
+import { TRUST_CHANGE_HISTORY, WHAT_CHANGED_ITEMS, RISK_FLAGS } from '../lib/mockData';
 import ScoreBadge from '../components/ui/ScoreBadge';
 import ErrorState, { RateLimitBanner } from '../components/ui/ErrorState';
 import { SkeletonTokenCard } from '../components/ui/SkeletonCard';
@@ -15,6 +16,8 @@ import PriceHistoryChart from '../components/charts/PriceHistoryChart';
 import InsightBanner from '../components/ui/InsightBanner';
 import InterpretationNote from '../components/ui/InterpretationNote';
 import ActionRow from '../components/ui/ActionRow';
+import FeatureGate from '../components/subscription/FeatureGate';
+import { useSubscription } from '../lib/subscriptionContext';
 
 // ── Formatters ────────────────────────────────────────────────
 const fmtUsd = new Intl.NumberFormat('en-US', {
@@ -191,9 +194,125 @@ function RiskColumn({ title, items }: RiskColProps) {
   );
 }
 
+// ── Extended Risk Signals (Pro) ───────────────────────────────
+function ExtendedRiskSignals() {
+  const topFlags = RISK_FLAGS.filter((f) => f.status === 'active').slice(0, 5);
+
+  const severityBadge = (s: string): 'red' | 'amber' | 'green' => {
+    if (s === 'high') return 'red';
+    if (s === 'medium') return 'amber';
+    return 'green';
+  };
+
+  return (
+    <div className="bg-[#132237] border border-[#1E3350] p-5 mt-4">
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7E94] mb-4 border-b border-[#1E3350] pb-3">
+        Active Risk Flags
+      </h3>
+      <div className="flex flex-col gap-3">
+        {topFlags.map((flag) => (
+          <div key={flag.id} className="flex items-start gap-3 py-2 border-b border-[#1E3350]/50 last:border-0">
+            <ScoreBadge variant={severityBadge(flag.severity)} size="sm">
+              {flag.severity}
+            </ScoreBadge>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[#E8EDF2] text-xs font-semibold">{flag.token}</span>
+                <span className="text-[#6B7E94] text-xs">{flag.dimension}</span>
+              </div>
+              <p className="text-[#E8EDF2] text-xs font-medium">{flag.title}</p>
+              <p className="text-[#6B7E94] text-[11px] mt-0.5 leading-relaxed line-clamp-2">{flag.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── What Changed Panel ────────────────────────────────────────
+function WhatChangedPanel() {
+  const recentItems = WHAT_CHANGED_ITEMS.slice(0, 3);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {recentItems.map((item) => {
+        const tokenBadge =
+          item.token === 'PAXG' ? ('gold' as const) :
+          item.token === 'XAUT' ? ('amber' as const) :
+          ('neutral' as const);
+
+        return (
+          <div key={item.id} className="bg-[#132237] border border-[#1E3350] p-5">
+            <div className="flex items-start gap-3 mb-3">
+              <ScoreBadge variant={tokenBadge} size="sm">{item.token}</ScoreBadge>
+              <span className="text-[#6B7E94] text-[11px]">{item.week}</span>
+            </div>
+            <h4 className="text-[#E8EDF2] text-sm font-semibold mb-2">{item.headline}</h4>
+            <p className="text-[#6B7E94] text-xs leading-relaxed mb-3">{item.whyItMatters}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="bg-[#2ECC71]/5 border border-[#2ECC71]/15 p-3">
+                <p className="text-[#2ECC71] text-[10px] font-bold uppercase tracking-widest mb-1">Bull case</p>
+                <p className="text-[#E8EDF2] text-xs leading-relaxed">{item.bullCase}</p>
+              </div>
+              <div className="bg-[#E74C3C]/5 border border-[#E74C3C]/15 p-3">
+                <p className="text-[#E74C3C] text-[10px] font-bold uppercase tracking-widest mb-1">Bear case</p>
+                <p className="text-[#E8EDF2] text-xs leading-relaxed">{item.bearCase}</p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Trust Change Feed Strip ───────────────────────────────────
+function TrustChangeFeedStrip() {
+  const recent = TRUST_CHANGE_HISTORY.slice(0, 5);
+
+  return (
+    <div className="bg-[#132237] border border-[#1E3350] p-5">
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7E94] mb-4 border-b border-[#1E3350] pb-3">
+        Recent Trust Score Changes
+      </h3>
+      <div className="flex flex-col divide-y divide-[#1E3350]">
+        {recent.map((event) => {
+          const isPositive = event.delta > 0;
+          const isNeutral = event.delta === 0;
+          const tokenBadge =
+            event.token === 'PAXG' ? ('gold' as const) : ('amber' as const);
+
+          return (
+            <div key={event.id} className="py-3 flex items-start gap-3">
+              <div className="flex flex-col items-center gap-1 shrink-0">
+                <ScoreBadge variant={tokenBadge} size="sm">{event.token}</ScoreBadge>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-0.5">
+                  <span className="text-[#E8EDF2] text-xs font-semibold">{event.dimension}</span>
+                  <div className={`flex items-center gap-1 text-xs font-bold font-mono shrink-0 ${
+                    isPositive ? 'text-[#2ECC71]' :
+                    isNeutral ? 'text-[#6B7E94]' : 'text-[#E74C3C]'
+                  }`}>
+                    {isPositive ? <ArrowUpRight size={12} /> :
+                     isNeutral ? <Minus size={12} /> :
+                     <ArrowDownRight size={12} />}
+                    {isPositive ? '+' : ''}{event.delta}
+                  </div>
+                </div>
+                <p className="text-[#6B7E94] text-[11px] leading-relaxed line-clamp-2">{event.reason}</p>
+                <span className="text-[#6B7E94] text-[10px] mt-0.5 block">{event.date}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Hero / Positioning Block ──────────────────────────────────
-// The product framing layer. Should feel like a Bloomberg terminal
-// splash — not a marketing landing page. Concise. Authoritative.
 function HeroBlock({ lastUpdated }: { lastUpdated: string }) {
   return (
     <div className="border-b border-[#1E3350] pb-8">
@@ -227,7 +346,7 @@ function HeroBlock({ lastUpdated }: { lastUpdated: string }) {
           </div>
         </div>
 
-        {/* Live indicator — top-right */}
+        {/* Live indicator */}
         <div className="flex items-center gap-2 shrink-0 sm:mt-1">
           <span className="w-1.5 h-1.5 bg-[#2ECC71] animate-pulse" />
           <span className="text-[#6B7E94] text-xs font-mono">Updated {lastUpdated}</span>
@@ -257,6 +376,8 @@ function HeroBlock({ lastUpdated }: { lastUpdated: string }) {
 
 // ── Dashboard Page ────────────────────────────────────────────
 export default function Dashboard() {
+  const { hasFeature } = useSubscription();
+
   const paxgHistory = useQuery({
     queryKey: ['priceHistory', 'pax-gold'],
     queryFn: () => getPriceHistory('pax-gold', 30),
@@ -271,8 +392,6 @@ export default function Dashboard() {
     retry: 2,
   });
 
-  // XAU-denominated histories for premium/discount chart
-  // Each price point = token price in troy oz of gold on that date
   const paxgXauHistory = useQuery({
     queryKey: ['priceHistoryXau', 'pax-gold'],
     queryFn: () => getPriceHistoryInXau('pax-gold', 30),
@@ -415,7 +534,12 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Footer row: link to full breakdown + action row */}
+        {/* Full risk signals (Pro gate) */}
+        <FeatureGate feature="risk_signals_full" mode="blur">
+          <ExtendedRiskSignals />
+        </FeatureGate>
+
+        {/* Footer row */}
         <div className="mt-5 pt-4 border-t border-[#1E3350] flex items-center justify-between flex-wrap gap-4">
           <p className="text-[#6B7E94] text-xs">
             Full 7-dimension breakdown on the{' '}
@@ -438,6 +562,32 @@ export default function Dashboard() {
           />
         </div>
       </Section>
+
+      {/* Section E — What Changed This Week (Pro gate) */}
+      <FeatureGate feature="what_changed_panel" mode="blur">
+        <Section
+          title="E. What Changed This Week"
+          subtitle="Weekly intelligence digest on material trust score changes and market developments."
+        >
+          <WhatChangedPanel />
+        </Section>
+      </FeatureGate>
+
+      {/* Section F — Trust Change Feed (Pro gate) */}
+      <FeatureGate feature="trust_change_feed" mode="blur">
+        <Section
+          title="F. Trust Change Feed"
+          subtitle="Real-time log of trust score changes across dimensions."
+        >
+          <TrustChangeFeedStrip />
+          {hasFeature('trust_change_feed') && (
+            <InterpretationNote>
+              Trust scores update monthly at minimum, and following any material disclosure
+              event. Each change includes a dimension-level reason and source reference.
+            </InterpretationNote>
+          )}
+        </Section>
+      </FeatureGate>
     </div>
   );
 }

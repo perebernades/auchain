@@ -1,14 +1,19 @@
-import { BookOpen, Share2, Download, MessageSquare } from 'lucide-react';
+import { BookOpen, Share2, Download, MessageSquare, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import {
   TRUST_DIMENSIONS,
   TRUST_SCORES,
   TRUST_VERDICTS,
 } from '../data/staticData';
+import { TRUST_CHANGE_HISTORY } from '../lib/mockData';
 import TrustRadarChart from '../components/charts/TrustRadarChart';
 import InsightBanner from '../components/ui/InsightBanner';
 import InterpretationNote from '../components/ui/InterpretationNote';
 import ActionRow from '../components/ui/ActionRow';
 import RoadmapCard from '../components/ui/RoadmapCard';
+import ScoreBadge from '../components/ui/ScoreBadge';
+import FeatureGate from '../components/subscription/FeatureGate';
+import { useSubscription } from '../lib/subscriptionContext';
+import { Link } from 'react-router-dom';
 
 // ── Score color helpers ───────────────────────────────────────
 function scoreBg(score: number): string {
@@ -102,8 +107,15 @@ function ScoreCard({ ticker, fullName, score, verdict, ringColor, textColor }: S
   );
 }
 
-// ── Dimension Breakdown Table ─────────────────────────────────
+// ── Dimension Breakdown Table (gated) ────────────────────────
 function BreakdownTable() {
+  const { hasFeature } = useSubscription();
+  const isPro = hasFeature('trust_score_breakdown');
+
+  const allRows = TRUST_DIMENSIONS;
+  const visibleRows = isPro ? allRows : allRows.slice(0, 2);
+  const lockedRows = isPro ? [] : allRows.slice(2);
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
@@ -120,7 +132,7 @@ function BreakdownTable() {
           </tr>
         </thead>
         <tbody>
-          {TRUST_DIMENSIONS.map((dim, i) => (
+          {visibleRows.map((dim, i) => (
             <tr
               key={dim.key}
               className={`border-b border-[#1E3350] transition-colors hover:bg-[#1E3350]/30 ${
@@ -144,6 +156,115 @@ function BreakdownTable() {
           ))}
         </tbody>
       </table>
+
+      {/* Locked rows overlay */}
+      {!isPro && lockedRows.length > 0 && (
+        <div className="relative">
+          <div className="blur-sm pointer-events-none select-none">
+            <table className="w-full text-sm border-collapse">
+              <tbody>
+                {lockedRows.map((dim, i) => (
+                  <tr
+                    key={dim.key}
+                    className={`border-b border-[#1E3350] ${i % 2 === 0 ? 'bg-[#0D1B2A]/40' : ''}`}
+                  >
+                    <td className="py-3 px-4 font-semibold text-[#E8EDF2] whitespace-nowrap">{dim.label}</td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 text-xs font-bold font-mono border ${scoreBg(dim.paxg)}`}>
+                        {dim.paxg}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 text-xs font-bold font-mono border ${scoreBg(dim.xaut)}`}>
+                        {dim.xaut}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-[#6B7E94] text-xs max-w-[200px]">{dim.whatWeMeasure}</td>
+                    <td className="py-3 px-4 text-[#E8EDF2] text-xs max-w-[240px]">{dim.keyDifference}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0D1B2A]/60 backdrop-blur-[2px]">
+            <div className="flex flex-col items-center gap-3 px-6 py-5 bg-[#132237] border border-[#1E3350] text-center max-w-xs">
+              <p className="text-[#E8EDF2] text-sm font-semibold">
+                Unlock full 7-dimension breakdown with Pro
+              </p>
+              <p className="text-[#6B7E94] text-xs">
+                {lockedRows.length} more dimensions available on Pro.
+              </p>
+              <Link
+                to="/pricing"
+                className="px-4 py-1.5 text-xs font-semibold tracking-wide bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-[#C9A84C] hover:bg-[#C9A84C]/20 hover:text-[#E8C97A] transition-colors"
+              >
+                Upgrade to Pro
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Trust Change History (gated) ──────────────────────────────
+function TrustChangeHistorySection() {
+  const categoryBadge = (cat: string): 'gold' | 'amber' | 'green' | 'neutral' | 'red' => {
+    if (cat === 'attestation') return 'gold';
+    if (cat === 'custody') return 'amber';
+    if (cat === 'regulatory') return 'green';
+    if (cat === 'liquidity') return 'neutral';
+    return 'neutral';
+  };
+
+  return (
+    <div className="bg-[#132237] border border-[#1E3350]">
+      <div className="p-5 border-b border-[#1E3350]">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7E94]">
+          Trust Score Change History
+        </h3>
+      </div>
+      <div className="divide-y divide-[#1E3350]">
+        {TRUST_CHANGE_HISTORY.map((event) => {
+          const isPositive = event.delta > 0;
+          const isNeutral = event.delta === 0;
+          const tokenBadge =
+            event.token === 'PAXG' ? ('gold' as const) : ('amber' as const);
+
+          return (
+            <div key={event.id} className="p-5 flex items-start gap-4">
+              <div className="flex flex-col gap-2 shrink-0 items-start">
+                <ScoreBadge variant={tokenBadge} size="sm">{event.token}</ScoreBadge>
+                <ScoreBadge variant={categoryBadge(event.category)} size="sm">
+                  {event.category}
+                </ScoreBadge>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-[#E8EDF2] text-sm font-semibold">{event.dimension}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[#6B7E94] text-xs font-mono">
+                      {event.previousScore} to {event.newScore}
+                    </span>
+                    <span className={`flex items-center gap-0.5 text-xs font-bold font-mono ${
+                      isPositive ? 'text-[#2ECC71]' :
+                      isNeutral ? 'text-[#6B7E94]' : 'text-[#E74C3C]'
+                    }`}>
+                      {isPositive ? <ArrowUpRight size={11} /> :
+                       isNeutral ? <Minus size={11} /> :
+                       <ArrowDownRight size={11} />}
+                      {isPositive ? '+' : ''}{event.delta}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-[#6B7E94] text-xs leading-relaxed">{event.reason}</p>
+                <span className="text-[#6B7E94] text-[10px] mt-1 block">{event.date}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -246,7 +367,7 @@ export default function TrustScore() {
         </div>
       </section>
 
-      {/* Section C. Dimension Breakdown */}
+      {/* Section C. Dimension Breakdown (partially gated) */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
@@ -254,11 +375,11 @@ export default function TrustScore() {
           </h2>
           <p className="text-[#6B7E94] text-xs mt-1">
             Score key:{' '}
-            <span className="text-[#2ECC71]">≥ 75 Strong</span>
+            <span className="text-[#2ECC71]">75+ Strong</span>
             {' · '}
-            <span className="text-[#F39C12]">50–74 Moderate</span>
+            <span className="text-[#F39C12]">50-74 Moderate</span>
             {' · '}
-            <span className="text-[#E74C3C]">&lt; 50 Weak</span>
+            <span className="text-[#E74C3C]">Below 50 Weak</span>
             {' · Each dimension independently assessed.'}
           </p>
         </div>
@@ -340,11 +461,26 @@ export default function TrustScore() {
         </div>
       </section>
 
+      {/* Section E. Trust Change History (Pro gate) */}
+      <FeatureGate feature="trust_change_feed" mode="blur">
+        <section>
+          <div className="mb-4">
+            <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
+              E. Trust Change History
+            </h2>
+            <p className="text-[#6B7E94] text-xs mt-1">
+              Full historical log of dimension-level trust score changes, with reasons and dates.
+            </p>
+          </div>
+          <TrustChangeHistorySection />
+        </section>
+      </FeatureGate>
+
       {/* Platform Roadmap */}
       <section>
         <div className="mb-4">
           <h2 className="text-[#E8EDF2] font-bold text-base uppercase tracking-widest">
-            E. What's Next
+            F. What's Next
           </h2>
         </div>
         <RoadmapCard />

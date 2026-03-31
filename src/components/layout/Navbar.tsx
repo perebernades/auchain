@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import PlanBadge from '../subscription/PlanBadge';
 
 const NAV_LINKS = [
   { to: '/', label: 'Dashboard' },
   { to: '/trust-score', label: 'Trust Score' },
   { to: '/compare', label: 'ETF Compare' },
+  { to: '/watchlist', label: 'Watchlist' },
+  { to: '/alerts', label: 'Alerts' },
+  { to: '/pricing', label: 'Pricing' },
 ];
 
 export default function Navbar() {
@@ -24,9 +28,6 @@ export default function Navbar() {
               </span>
               <div className="h-[2px] w-full bg-[#C9A84C] mt-0.5" />
             </div>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase bg-[#C9A84C]/10 text-[#C9A84C] border border-[#C9A84C]/30 ml-1">
-              Free Beta
-            </span>
           </NavLink>
 
           {/* Desktop Nav */}
@@ -37,7 +38,7 @@ export default function Navbar() {
                 to={to}
                 end={to === '/'}
                 className={({ isActive }) =>
-                  `px-4 py-2 text-sm font-medium tracking-wide transition-colors ${
+                  `px-3 py-2 text-sm font-medium tracking-wide transition-colors ${
                     isActive
                       ? 'text-[#C9A84C] border-b-2 border-[#C9A84C]'
                       : 'text-[#6B7E94] hover:text-[#E8EDF2]'
@@ -49,19 +50,29 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden p-2 text-[#6B7E94] hover:text-[#E8EDF2] transition-colors"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Plan badge + mobile hamburger */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <PlanBadge />
+            </div>
+
+            <button
+              className="md:hidden p-2 text-[#6B7E94] hover:text-[#E8EDF2] transition-colors"
+              onClick={() => setOpen(!open)}
+              aria-label="Toggle menu"
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {open && (
           <nav className="md:hidden border-t border-[#1E3350] py-2">
+            {/* Plan badge on mobile */}
+            <div className="px-4 py-2">
+              <PlanBadge />
+            </div>
             {NAV_LINKS.map(({ to, label }) => (
               <NavLink
                 key={to}
