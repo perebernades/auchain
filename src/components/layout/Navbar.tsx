@@ -16,7 +16,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1E3350] bg-[#0D1B2A]/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-[#1E3350] bg-[#0D1B2A]" style={{ position: '-webkit-sticky' as 'sticky' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
 
