@@ -4,7 +4,7 @@ import { Menu, X } from 'lucide-react';
 import PlanBadge from '../subscription/PlanBadge';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Dashboard' },
+  { to: '/dashboard', label: 'Dashboard' },
   { to: '/trust-score', label: 'Trust Score' },
   { to: '/compare', label: 'ETF Compare' },
   { to: '/watchlist', label: 'Watchlist' },

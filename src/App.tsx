@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Dashboard from './pages/Dashboard';
+import Landing from './pages/Landing';
 import TrustScore from './pages/TrustScore';
 import Compare from './pages/Compare';
 import Pricing from './pages/Pricing';
@@ -17,7 +18,8 @@ export default function App() {
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trust-score" element={<TrustScore />} />
             <Route path="/compare" element={<Compare />} />
             <Route path="/pricing" element={<Pricing />} />
