@@ -14,7 +14,7 @@ export const TRUST_DIMENSIONS = [
     paxg: 90,
     xaut: 60,
     whatWeMeasure: 'Reserve attestation frequency, auditor tier, and gold backing ratio.',
-    keyDifference: 'PAXG: monthly KPMG attestation. XAUT: quarterly BDO.',
+    keyDifference: 'PAXG: LBMA-standard, fully allocated gold with higher reserve transparency. XAUT: physical gold backing with less detailed reserve disclosure.',
   },
   {
     key: 'legalClarity',
@@ -62,7 +62,7 @@ export const TRUST_DIMENSIONS = [
     paxg: 65,
     xaut: 35,
     whatWeMeasure: 'Average daily trading volume, DEX/CEX depth, and bid-ask spreads.',
-    keyDifference: 'PAXG approx $5M/day. XAUT approx $2M/day. Both thin vs GLD ($1B+/day).',
+    keyDifference: 'PAXG: $50M–$150M average daily volume. XAUT: $20M–$100M average daily volume. Both materially less liquid than gold ETFs (GLD ~$10B+/day).',
   },
 ] as const;
 
